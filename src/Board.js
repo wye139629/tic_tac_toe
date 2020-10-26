@@ -39,13 +39,17 @@ export default class Board extends Component {
   render() {
     const {round, marks, winner} = this.state
     return (
-      <div className = "board">
-        {
-          marks.map((mark, index)=>{
-            return (<Square index={index} round={round} update={this.update.bind(this)} winner={winner} mark={mark} />)
-          })
-        }
-        <span>winner:{winner}</span>
+      <div className="container">
+        <span>Player1:O</span>
+        <span>Player2:X</span>
+        <div className = "board">
+          {
+            marks.map((mark, index)=>{
+              return (<Square index={index} round={round} update={this.update.bind(this)} winner={winner} mark={mark} />)
+            })
+          }
+        </div>
+        <span>Winner:{winner}</span>
       </div>
     )
   }
@@ -57,47 +61,47 @@ export default class Board extends Component {
       this.setState((preState)=>{
        let newMark = round%2
        preState.marks[cellIndex] = newMark
+       let winner = this.checkWinner(preState.marks)
        return {
          round: preState.round+1,
          marks: preState.marks,
-         winner: this.checkWinner()
+         winner: winner
         }
       })
 
     }
   }
 
-  checkWinner(){
-    const marks = this.state.marks
-
+  checkWinner(marks){
+    // const marks = this.state.marks
     for(let i = 0; i < marks.length; i+=3){
-      if(marks[i] === marks[i+1] && marks[i+1] === marks[i+2] && marks[i+2] === 0){
-        return "player1"
-      }else if(marks[i] === marks[i+1] && marks[i+1] === marks[i+2] && marks[i+2] === 1){
-        return "player2"
+      if(marks[i] !== -1 && marks[i] === marks[i+1] && marks[i+1] === marks[i+2]){
+        return this.winner(marks[i])
       }
     }
 
     for(let i = 0; i < 4; i++){
-      if(marks[i] === marks[i+3] && marks[i+3] === marks[i+6] && marks[i+6] === 0){
-        return "player1"
-      }else if(marks[i] === marks[i+3] && marks[i+3] === marks[i+6] && marks[i+6] === 1){
-        return "player2"
+      if(marks[i] !== -1 && marks[i] === marks[i+3] && marks[i+3] === marks[i+6]){
+        return this.winner(marks[i])
       }
     }
 
-    if(marks[0] === marks[4] && marks[4] === marks[8] && marks[8] === 0){
-      return "player1"
-    }else if(marks[0] === marks[4] && marks[4] === marks[8] && marks[8] === 1){
-      return "player2"
+    if(marks[0] !== -1 && marks[0] === marks[4] && marks[4] === marks[8]){
+      return this.winner(marks[0])
     }
 
-    if(marks[2] === marks[4] && marks[4] === marks[6] && marks[6] === 0){
-      return "player1"
-    }else if(marks[2] === marks[4] && marks[4] === marks[6] && marks[6] === 1){
-      return "player2"
+    if(marks[2] !== -1 && marks[2] === marks[4] && marks[4] === marks[6]){
+      return this.winner(marks[2])
     }
 
     return ""
+  }
+
+  winner(player){
+    if(player === 0){
+      return "player1"
+    }else if(player === 1){
+      return "player2"
+    }
   }
 }
