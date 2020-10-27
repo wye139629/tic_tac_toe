@@ -45,7 +45,7 @@ export default class Board extends Component {
         <div className = "board">
           {
             marks.map((mark, index)=>{
-              return (<Square index={index} round={round} update={this.update.bind(this)} winner={winner} mark={mark} />)
+              return (<Square key={index} index={index} round={round} update={this.update.bind(this)} winner={winner} mark={mark} />)
             })
           }
         </div>
