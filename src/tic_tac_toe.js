@@ -16,6 +16,14 @@ export default function Game(){
     setHistory(history.concat([cloneSquareText]))
   }
 
+  function goBackStatus(position){
+    const targetStatus = history.slice(0, position+1)
+    const cloneNextPlayer = (position+1)%2
+    setNextPlayer(cloneNextPlayer)
+    setHistory(targetStatus)
+
+  }
+
   useEffect(()=>{
     checkWinner(currentTable)
   })
@@ -44,19 +52,47 @@ export default function Game(){
     <div className="container">
       <Table status={{currentTable, winner}} updateSquare={updateSquare}/>
       <div className="game-info">
-        <div className=''>Next Player: {nextPlayer?"O":"X"}</div>
+        <div>Next Player: {nextPlayer?"O":"X"}</div>
         <div>Winner:{winner}</div>
+        <Historybtn history={history} goBackStatus={goBackStatus}/>
       </div>
     </div>
   )
 }
 
+function Historybtn(props){
+  function renderBtn(){
+    return props.history.map((value, index)=>{
+      return (
+        <li key={index}>
+          <button onClick={()=>{clickHandler(index)}}>
+            {
+            index === 0? "Start": `Go to step ${index}`
+            }
+          </button>
+        </li>
+      )
+    })
+  }
+
+  function clickHandler(step){
+    props.goBackStatus(step)
+  }
+
+  return(
+    <ol>
+      {renderBtn()}
+    </ol>
+  )
+}
+
+
+
 function Table(props) {
-  // console.log(props.status)
   const {currentTable, winner} = props.status
   function renderSquare(){
    return currentTable.map((text, index)=>{
-      return <Square value={{text, index, winner}} updateSquare={props.updateSquare}/>
+      return <Square key={index} value={{text, index, winner}} updateSquare={props.updateSquare}/>
     })
   }
 
@@ -68,7 +104,6 @@ function Table(props) {
 }
 
 function Square(props) {
-  console.log(props.updateSquare)
   const {text, index, winner} = props.value
   function clickHandler(){
     if(winner !== null) return
