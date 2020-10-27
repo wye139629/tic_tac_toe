@@ -2,34 +2,22 @@ import React, { Fragment, useState, useEffect } from 'react';
 import "./Board.css"
 
 export default function Game(){
-  return (
-    <div>
-      <Table/>
-    </div>
-  )
-}
-
-function Table() {
   const text = Array(9).fill(null)
   const [nextPlayer, setNextPlayer] = useState(1)
-  const [squareText, setSquareText] = useState([...text])
+  const [history, setHistory] = useState([[...text]])
   const [winner, setWinner] = useState(null)
-
-  function renderSquare(){
-   return squareText.map((text, index)=>{
-      return <Square value={{text, index, winner}} updateSquare={updateSquare}/>
-    })
-  }
+  const currentTable = history[history.length-1]
 
   function updateSquare(position){
-    const cloneSquareText = squareText.slice()
+    const cloneSquareText = currentTable.slice()
     cloneSquareText[position] = nextPlayer? "O":"X"
     nextPlayer? setNextPlayer(0):setNextPlayer(1)
-    setSquareText(cloneSquareText)
+
+    setHistory(history.concat([cloneSquareText]))
   }
 
   useEffect(()=>{
-    checkWinner(squareText)
+    checkWinner(currentTable)
   })
 
   function checkWinner(currentSquare){
@@ -51,19 +39,36 @@ function Table() {
       }
     }
   }
+
   return (
-    <Fragment>
-      <div className=''>Next Player: {nextPlayer?"O":"X"}</div>
-      <div className="board">
-        {renderSquare()}
+    <div className="container">
+      <Table status={{currentTable, winner}} updateSquare={updateSquare}/>
+      <div className="game-info">
+        <div className=''>Next Player: {nextPlayer?"O":"X"}</div>
+        <div>Winner:{winner}</div>
       </div>
-      <div>Winner:{winner}</div>
-    </Fragment>
+    </div>
+  )
+}
+
+function Table(props) {
+  // console.log(props.status)
+  const {currentTable, winner} = props.status
+  function renderSquare(){
+   return currentTable.map((text, index)=>{
+      return <Square value={{text, index, winner}} updateSquare={props.updateSquare}/>
+    })
+  }
+
+  return (
+    <div className="board">
+      {renderSquare()}
+    </div>
   )
 }
 
 function Square(props) {
-  // console.log(props)
+  console.log(props.updateSquare)
   const {text, index, winner} = props.value
   function clickHandler(){
     if(winner !== null) return
